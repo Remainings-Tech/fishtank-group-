@@ -7,15 +7,20 @@ pygame.init()
 screen = pygame.display.set_mode((1800,800))
 pygame.display.set_caption("Fish Simulator")
 clock = pygame.time.Clock() 
+background_image = pygame.image.load((r"C:\Users\802910\Desktop\underwater.jpg"))
 
 #colors
+bg_x1 = 0
+bg_x2 = 80000
+
 
 SAND = (240, 210, 165)
-GREEN = (0,150, 113)
+GREEN = (7,110, 0)
 
 class Fish:
     def __init__(self):
-        self.fishImage = pygame.image.load(r"C:\Users\802910\Desktop\fish.jpg")
+        self.fishImage = pygame.image.load(r"C:\Users\802910\Pictures\fish-removebg-preview.png")
+        self.Bubble = pygame.image.load(r"C:\Users\802910\Desktop\images (1).jpg")
         pygame.Surface.set_colorkey (self.fishImage, [255,255,255])
         self.xpos = random.randint(0, 1800)
         self.ypos = random.randint(0, 800)
@@ -46,7 +51,7 @@ class Fish:
 
 # instantiate a fish object
 fish = Fish()
-
+  
 
 running = True
 while running:# Game loop########################################################
@@ -58,14 +63,27 @@ while running:# Game loop#######################################################
 
     #physics/update section--------------------------
     fish.move()
-
+  
 
     #render section----------------------------------
     # Fill the screen with a background color
-    screen.fill((0, 150, 255))
+    
+    #Background draw
+    screen.blit(background_image, (bg_x1, 0))
+    screen.blit(background_image, (bg_x2, 0))
+    
+    
     pygame.draw.rect(screen, SAND, (0, 760, 1800, 45))
-
+    pygame.draw.rect(screen, (GREEN), (400, 590, 20, 200))
+    pygame.draw.rect(screen, (GREEN), (100, 490, 20, 500))
+    pygame.draw.rect(screen, (GREEN), (800, 510, 20, 200))
+    pygame.draw.rect(screen, (GREEN), (1200, 590, 20, 200))
+    pygame.draw.rect(screen, (GREEN), (1400, 390, 20, 600))
+    pygame.draw.rect(screen, (GREEN), (1600, 590, 20, 200))
+    pygame.draw.rect(screen, (GREEN), (800, 590, 20, 200))
+ 
     # Draw the fish
+    fish.draw(screen)
     fish.draw(screen)
 
     # Update the display
