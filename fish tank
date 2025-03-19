@@ -2,9 +2,8 @@ import pygame
 import random
 import time
 
-
 pygame.init()
-screen = pygame.display.set_mode((1800,800))
+screen = pygame.display.set_mode((1800, 800))
 pygame.display.set_caption("Fish Simulator")
 clock = pygame.time.Clock() 
 background_image = pygame.image.load((r"C:\Users\802910\Desktop\underwater.jpg"))
@@ -13,67 +12,100 @@ background_image = pygame.image.load((r"C:\Users\802910\Desktop\underwater.jpg")
 bg_x1 = 0
 bg_x2 = 80000
 
-
 SAND = (240, 210, 165)
-GREEN = (7,110, 0)
+GREEN = (7, 110, 0)
 
 class Fish:
     def __init__(self):
         self.fishImage = pygame.image.load(r"C:\Users\802910\Pictures\fish-removebg-preview.png")
-        self.Bubble = pygame.image.load(r"C:\Users\802910\Desktop\images (1).jpg")
-        pygame.Surface.set_colorkey (self.fishImage, [255,255,255])
+        pygame.Surface.set_colorkey(self.fishImage, [255, 255, 255])
         self.xpos = random.randint(0, 1800)
         self.ypos = random.randint(0, 800)
-        self.speed = 3
-        self.xDir = random.randint(-1,1)
-        self.yDir = random.randint(-1,1)
-        self.last_change_time = time.time() #grab starting time
+        self.speed = 9
+        self.xDir = random.randint(-1, 1)
+        self.yDir = random.randint(-1, 1)
+        self.last_change_time = time.time()  # grab starting time
 
     def move(self):
-        # Move the fish
-        self.xpos += self.xDir* self.speed
+        #move the fish
+        self.xpos += self.xDir * self.speed
         self.ypos += self.yDir * self.speed
 
-        # Change direction every 3 seconds
-        if time.time() - self.last_change_time > 3:  
-            self.xDir = random.randint(-1,1)
-            self.yDir = random.randint(-1,1)
-            self.last_change_time = time.time() #reset the time
+        #Change direction every 3 seconds
+        if time.time() - self.last_change_time > 3:
+            self.xDir = random.randint(-1, 1)
+            self.yDir = random.randint(-1, 1)
+            self.last_change_time = time.time()  # reset the time
 
-        # Check for collision with walls and change direction
-        if self.xpos <= 0 or self.xpos >= 1810:
+        #Check for collision with walls and change direction
+        if self.xpos <= 0 or self.xpos >= 1680:
             self.xDir *= -1
-        if self.ypos <= 0 or self.ypos>= 750:
+        if self.ypos <= 0 or self.ypos >= 750:
             self.yDir *= -1
 
     def draw(self, screen):
         screen.blit(self.fishImage, (self.xpos, self.ypos))
 
+
+class Snowflake:
+    # constructor for class snowflake
+    def __init__(self, x, y):
+        self.xpos = x
+        self.ypos = y
+
+    def move(self):
+        self.xpos += random.randrange(-2, 3)#makes the snowflake move a random amount left or right
+        self.ypos += random.randrange(-3, 3)#makes the snowflake move a random amount up or down
+        if self.ypos < 0:#resets the snowflake's position to the top of the screen once it's reached the bottom
+            self.ypos = random.randrange(500, 1000)#creates a snowflake and puts it in the list
+
+    def draw(self):
+        pygame.draw.circle(screen, (255, 255, 255), (self.xpos, self.ypos), 2)  # draws every snowflake in the list
+
+#----------------------------------------------------------------------
+
+#create a bunch of snowflakes
+flakeBag = []
+for i in range(500):
+    flakeBag.append(Snowflake(random.randrange(0, 1800), random.randrange(-500, 500)))
+
+#create a buncha empty lists
+sizes1 = []
+positions1 = []
+colors1 = []
+
+#push a buncha numbers into the lists
+for i in range(635000):
+    sizes1.append(random.randrange(4, 5)) 
+    positions1.append((random.randrange(0, 1800), random.randrange(750, 900)))  
+    colors1.append((random.randrange(153, 255), 255, 200))  
+
 # instantiate a fish object
 fish = Fish()
-  
 
 running = True
-while running:# Game loop########################################################
+while running: #game loop########################################################
     clock.tick(60)
-    #input/event section-----------------------------
+    
+    #Input/event section-----------------------------
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    #physics/update section--------------------------
+    #Physics/update section--------------------------
     fish.move()
-  
+
+    #move flakes
+    for i in range(len(flakeBag)):
+        flakeBag[i].move()
 
     #render section----------------------------------
-    # Fill the screen with a background color
+    #Fill the screen with a background color
     
     #Background draw
     screen.blit(background_image, (bg_x1, 0))
     screen.blit(background_image, (bg_x2, 0))
-    
-    
-    pygame.draw.rect(screen, SAND, (0, 760, 1800, 45))
+
     pygame.draw.rect(screen, (GREEN), (400, 590, 20, 200))
     pygame.draw.rect(screen, (GREEN), (100, 490, 20, 500))
     pygame.draw.rect(screen, (GREEN), (800, 510, 20, 200))
@@ -81,14 +113,19 @@ while running:# Game loop#######################################################
     pygame.draw.rect(screen, (GREEN), (1400, 390, 20, 600))
     pygame.draw.rect(screen, (GREEN), (1600, 590, 20, 200))
     pygame.draw.rect(screen, (GREEN), (800, 590, 20, 200))
- 
-    # Draw the fish
-    fish.draw(screen)
+
+    #Draw the gravel (this part is added from the original code)
+    for i in range(43500):
+        pygame.draw.circle(screen, colors1[i], (positions1[i][0], positions1[i][1]), sizes1[i])
+
+    #Draw the snowflakes
+    for i in range(len(flakeBag)):
+        flakeBag[i].draw()
+
+    #Draw the fish
     fish.draw(screen)
 
-    # Update the display
+    #Update the display
     pygame.display.flip()
-
-    #end of game loop!#######################################################
 
 pygame.quit()
